@@ -1,15 +1,13 @@
-import 'dart:convert';
 import 'dart:ui';
+import 'package:ethermine/apiprovider.dart';
 import 'package:ethermine/model/MinimumData.dart';
 import 'package:ethermine/model/PayoutData.dart';
-import 'package:ethermine/model/PayoutModel.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:ethermine/model/DataModel.dart';
 import 'package:ethermine/coinminerviewmodel.dart';
 import 'package:percent_indicator/percent_indicator.dart';
-import 'package:http/http.dart' as http;
 import 'dart:developer';
+
 
 class CoinminerMain extends StatelessWidget {
   final String apikey;
@@ -25,7 +23,8 @@ class CoinminerMain extends StatelessWidget {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: Miner(title: 'Coinminer info', apikey: apikey),
+      home: ApiProvider(api: Coinapi(),
+      child: Miner(title: 'Coinminer info', apikey: apikey,)),
     );
   }
 }
@@ -45,30 +44,16 @@ class Coinminer extends State<Miner> {
   var workers;
   String? paideth;
 
-  Coinminer({this.apikey});
+  Coinminer( { required String apikey});
 
-  final coinapi = Coinapi();
-
-  late Future<String?> result;
-  late Future<String?> payoutresult;
-  late Future<PayoutData> paidethamount;
-  late Future<String?> unpaid;
-  late Future<String?> recentpayout;
-  late Future<MinimumData> minimumpayout;
-
-  @override
   void initState() {
     super.initState();
-    result = coinapi.getworkernumber();
-    payoutresult = coinapi.getpayoutstring();
-    paidethamount = coinapi.getpaidamount();
-    unpaid = coinapi.getunpaideth();
-    recentpayout = coinapi.getrecentpayout();
-    minimumpayout = coinapi.getminimumpayout();
   }
 
   @override
   Widget build(BuildContext context) {
+    final coinapi = ApiProvider.of(context);
+
     return Scaffold(
         appBar: AppBar(
           title: Text(widget.title),
@@ -89,7 +74,7 @@ class Coinminer extends State<Miner> {
                     mainAxisSize: MainAxisSize.max,
                     children: [
                       FutureBuilder<String?>(
-                        future: result,
+                        future: coinapi!.api.getworkernumber(),
                         builder: (context, snapshot) {
                           if (snapshot.hasData) {
                             //return Text(snapshot.data.getuserallbalances.data.elementAt(1).confirmed.toString());
@@ -123,7 +108,7 @@ class Coinminer extends State<Miner> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       FutureBuilder<PayoutData>(
-                        future: paidethamount,
+                        future: coinapi.api.getpaidamount(),
                         builder: (context, snapshot) {
                           if (snapshot.hasData) {
                             //return Text(snapshot.data.getuserallbalances.data.elementAt(1).confirmed.toString());
@@ -169,7 +154,7 @@ class Coinminer extends State<Miner> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       FutureBuilder<String?>(
-                        future: unpaid,
+                        future: coinapi.api.getunpaideth(),
                         builder: (context, snapshot) {
                           if (snapshot.hasData) {
                             //return Text(snapshot.data.getuserallbalances.data.elementAt(1).confirmed.toString());
@@ -212,19 +197,20 @@ class Coinminer extends State<Miner> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           FutureBuilder<MinimumData?>(
-                            future: minimumpayout,
+                            future: coinapi.api.getminimumpayout(),
                             builder: (context, snapshot) {
                               if (snapshot.hasData) {
                                 //return Text(snapshot.data.getuserallbalances.data.elementAt(1).confirmed.toString());
                                 //log("percent = " + double.parse(snapshot.data!.payout).toString());
                                 //log("percent = " + (double.parse(snapshot.data!.payout) / double.parse(snapshot.data!.minimum)).toString());
-                                var result = (double.parse(snapshot.data!.payout) / double.parse(snapshot.data!.minimum)).toStringAsFixed(4);
-                                var percent = double.parse(result) * 100;
+                                var result = ((double.parse(snapshot.data!.payout) / double.parse(snapshot.data!.minimum)) * 100).toStringAsFixed(2);
+                                var percent = double.parse(result) / 100;
 
-                                if(percent > 1) {
+                                if(double.parse(result) > 100) {
                                   result = "1";
                                 }
-                                log("precent = " + ((double.parse(result)) * 100).toString());
+                                log("precent = " + ((double.parse(result))).toString());
+
                                 return Padding(
                                     padding: EdgeInsets.all(15),
                                     //apply padding to all four sides
@@ -243,8 +229,8 @@ class Coinminer extends State<Miner> {
                                           LinearPercentIndicator(
                                             width: MediaQuery.of(context).size.width - 50,
                                             lineHeight: 14.0,
-                                            percent: double.parse(result),
-                                            center: Text(percent.toString() + "%" ),
+                                            percent: percent,
+                                            center: Text(result + "%" ),
                                             backgroundColor: Colors.grey,
                                             progressColor: Colors.blue,
                                           ),
@@ -268,7 +254,7 @@ class Coinminer extends State<Miner> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       FutureBuilder<String?>(
-                        future: recentpayout,
+                        future: coinapi.api.getrecentpayout(),
                         builder: (context, snapshot) {
                           if (snapshot.hasData) {
                             //return Text(snapshot.data.getuserallbalances.data.elementAt(1).confirmed.toString());
