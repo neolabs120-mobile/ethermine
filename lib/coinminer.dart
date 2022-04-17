@@ -8,7 +8,6 @@ import 'package:ethermine/coinminerviewmodel.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 import 'dart:developer';
 
-
 class CoinminerMain extends StatelessWidget {
   final String apikey;
 
@@ -23,7 +22,7 @@ class CoinminerMain extends StatelessWidget {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: ApiProvider(api: Coinapi(),
+      home: ApiProvider(viewModel: CoinViewModel(),
       child: Miner(title: 'Coinminer info', apikey: apikey,)),
     );
   }
@@ -74,7 +73,7 @@ class Coinminer extends State<Miner> {
                     mainAxisSize: MainAxisSize.max,
                     children: [
                       FutureBuilder<String?>(
-                        future: coinapi!.api.getworkernumber(),
+                        future: coinapi!.viewModel.getworkernumber(),
                         builder: (context, snapshot) {
                           if (snapshot.hasData) {
                             //return Text(snapshot.data.getuserallbalances.data.elementAt(1).confirmed.toString());
@@ -108,7 +107,7 @@ class Coinminer extends State<Miner> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       FutureBuilder<PayoutData>(
-                        future: coinapi.api.getpaidamount(),
+                        future: coinapi.viewModel.getpaidamount(),
                         builder: (context, snapshot) {
                           if (snapshot.hasData) {
                             //return Text(snapshot.data.getuserallbalances.data.elementAt(1).confirmed.toString());
@@ -154,7 +153,7 @@ class Coinminer extends State<Miner> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       FutureBuilder<String?>(
-                        future: coinapi.api.getunpaideth(),
+                        future: coinapi.viewModel.getunpaideth(),
                         builder: (context, snapshot) {
                           if (snapshot.hasData) {
                             //return Text(snapshot.data.getuserallbalances.data.elementAt(1).confirmed.toString());
@@ -197,7 +196,7 @@ class Coinminer extends State<Miner> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           FutureBuilder<MinimumData?>(
-                            future: coinapi.api.getminimumpayout(),
+                            future: coinapi.viewModel.getminimumpayout(),
                             builder: (context, snapshot) {
                               if (snapshot.hasData) {
                                 //return Text(snapshot.data.getuserallbalances.data.elementAt(1).confirmed.toString());
@@ -254,7 +253,7 @@ class Coinminer extends State<Miner> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       FutureBuilder<String?>(
-                        future: coinapi.api.getrecentpayout(),
+                        future: coinapi.viewModel.getrecentpayout(),
                         builder: (context, snapshot) {
                           if (snapshot.hasData) {
                             //return Text(snapshot.data.getuserallbalances.data.elementAt(1).confirmed.toString());

@@ -2,11 +2,11 @@ import 'package:ethermine/coinminerviewmodel.dart';
 import 'package:flutter/material.dart';
 
 class ApiProvider extends InheritedWidget {
-  final Coinapi api;
+  final CoinViewModel viewModel;
 
   const ApiProvider({
     Key? key,
-    required this.api,
+    required this.viewModel,
     required Widget child,
 }) : super(key : key, child: child);
 
@@ -18,6 +18,6 @@ class ApiProvider extends InheritedWidget {
 
   @override
   bool updateShouldNotify(ApiProvider oldWidget) {
-    return oldWidget.api != api;
+    return true;
   }
 }

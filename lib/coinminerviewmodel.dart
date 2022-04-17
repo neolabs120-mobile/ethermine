@@ -7,7 +7,7 @@ import 'package:ethermine/model/MinimumData.dart';
 
 import 'dart:developer';
 
-class Coinapi {
+class CoinViewModel {
   Future<DataModel> getinfo() async {
     String url =
         "https://api.ethermine.org/miner/0x49AcE5D179769Aa917a611CbE2737D86b61Fc5b4/dashboard";
